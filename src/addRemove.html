@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="style.css"/>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+      <a href="./homepage.html">
+      <div class="header">
+      <h1 class="title">Pallet Movement Tracker</h1>
+    </div>
+    <div class="container">
+    <ul>
+      <li><a href="./addRemove.html">Add/Remove product from shelf</a></li>
+      <li><a href="./searchShelfStatus.html">Search empty shelves</a></li>
+      <li><a href="./searchProd.html">Search product location</a></li>
+      <li><a href="./searchBBD.html">Search best before date</a></li>
+    </ul>
+      <h2>Scan your items</h2>
+      <p>Product Code: <span id='productCode'>N/A</span></p>
+      <p>Shelf Location: <span id='shelfCode'>N/A</span></p>
+      <p>Employee ID: <span id='empID'>N/A</span></p>
+      <p class="qty"><input id="prodQty" placeholder='Enter quantity'/><button class="btn" id="saveQty" onclick="addQty()">Enter</button></p>
+      <p>Quantity of product:<span id='productQty'>100</span></p>
+      <div id="buttons"><button class="btn" id="upload" onclick="addProduct()">Add</button>
+      <button class="btn" id="upload" onclick="removeProduct()">Remove</button>
+      <button class="btn" id="upload" onclick="cancel()">Cancel</button>
+    </div>
+    </div>
+
+    <script>require('./renderer')</script>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./jquery.scannerdetection.js"></script>
+    <script type="text/javascript" src="./detectUSB.js"></script>
+    <script>if (window.module) module = window.module;</script>
+    <script type="text/javascript">
+
+    function addProduct(){
+      //need to check the status of shelf first!!
+      var prodCode = document.getElementById('productCode').textContent
+      var shelfCode = document.getElementById('shelfCode').textContent
+      var empID = document.getElementById('empID').textContent
+      console.log(prodCode.innerText);
+      if (prodCode=="N/A" || shelfCode=="N/A" || empID=="N/A"){
+        alert("Please ensure that the required codes are scanned")
+      }
+      else{
+        alert("ADDED \nProduct code: " + prodCode + "\nShelf Location: " + shelfCode + "\nEmployee ID: " + empID)
+      }
+    }
+
+    function addQty(){
+      var qty = document.getElementById("prodQty").value;
+      document.getElementById("productQty").innerHTML = qty;
+    }
+
+    $(document).scannerDetection({
+      onKeyDetect: function(event){console.log(event.which); return false;},
+      timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+      startChar: [120], // Prefix character for the cabled scanner (OPL6845R)
+      endChar: [13], // be sure the scan is complete if key 13 (enter) is detected
+      avgTimeByChar: 40, // it's not a barcode if a character takes longer than 40ms
+      onComplete: function(barcode, qty){
+        if(barcode.charAt(0)=='B'){
+          document.getElementById('productCode').innerHTML = barcode
+        }
+        if(barcode.charAt(0)=='4'){
+          document.getElementById('empID').innerHTML = barcode
+        }
+        if(barcode.charAt(0)=='5')
+        document.getElementById('shelfCode').innerHTML = barcode
+      } // main callback function
+    });
+
+    </script>
+  </body>
+</html>
